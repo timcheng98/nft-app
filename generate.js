@@ -200,7 +200,7 @@ const startCreating = async () => {
 		// console.log(editionCount);
 
 		let rarity = getRarity(editionCount);
-		let dna = dnaList[editionCount - 1];
+		let dna = dnaList[editionCount];
 		// console.log(rarity);
 
 		// let { newDna, randomPicks } = createDna(layers, rarity);
