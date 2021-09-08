@@ -1,252 +1,45 @@
-const fs = require('fs');
-const { createCanvas, loadImage } = require('canvas');
-const {
-	layers,
-	width,
-	height,
-	description,
-	baseImageUri,
-	editionSize,
-	startEditionFrom,
-	endEditionAt,
-	rarityWeights,
-} = require('./input/config.js');
-const { Buffer } = require('buffer');
-const { NFTStorage, File, toGatewayURL } = require('nft.storage');
-const _ = require('lodash');
-const console = require('console');
-const canvas = createCanvas(width, height);
-const ctx = canvas.getContext('2d');
-const apiKey =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4ZjAwYTcyRDlmRjJiOGE1QzAxNjZlOTIzN0YwMjM4QmZGYTNBNTgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzMDg0NTYzNDIxOCwibmFtZSI6IldTQk5GVCJ9.a6u_18N6erBhc_1Y6gaPuf_Dfd-e3ldQqR6sPexqXaE';
-const client = new NFTStorage({ token: apiKey });
+//express_demo.js 文件
+var express = require('express');
+var app = express();
+const path = require('path')
+ 
+// Add headers before the routes are defined
+app.use(function (req, res, next) {
 
-var metadataList = [];
-var attributesList = [];
-var dnaList = [];
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*');
 
-const saveImage = (_editionCount) => {
-	fs.writeFileSync(
-		`./output/${_editionCount}.png`,
-		canvas.toBuffer('image/png')
-	);
-};
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
-const saveMeta = (_editionCount, meta) => {
-	fs.writeFileSync(`./output/${_editionCount}.json`, meta);
-};
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
 
-const signImage = (_sig) => {
-	ctx.fillStyle = '#000000';
-	ctx.font = 'bold 30pt Courier';
-	ctx.textBaseline = 'top';
-	ctx.textAlign = 'left';
-	ctx.fillText(_sig, 40, 40);
-};
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
 
-const genColor = () => {
-	let hue = Math.floor(Math.random() * 360);
-	let pastel = `hsl(${hue}, 100%, 85%)`;
-	return pastel;
-};
+  // Pass to next layer of middleware
+  next();
+});
 
-const drawBackground = () => {
-	ctx.fillStyle = genColor();
-	ctx.fillRect(0, 0, width, height);
-};
+app.get('/:tokenId', async (req, res) => {
+  try {
+  const { tokenId } = req.params;
+  const meta = path.join(__dirname, `./output/${tokenId}.json`)
+  res.sendFile(meta);
+  } catch (err) {
+    res.json(404)
+  }
+})
 
-const addMetadata = async (_dna, _edition) => {
-	let dateTime = Date.now();
-	const data = await fs.readFileSync(`./output/${_edition}.png`);
-
-	const cid = await client.storeBlob(new File([data], '1.png', { type: 'image/png' }),)
-
-	// console.log('cid', cid);
-	const imageURL = await toGatewayURL(`ipfs://${cid}`)
-	let tempMetadata = {
-		// dna: _dna.join(''),
-		name: `Crypto WallStreetBets #${_edition}`,
-		description: description,
-		image: imageURL.href,
-		edition: _edition,
-		// date: dateTime,
-		attributes: attributesList,
-	};
-	attributesList = [];
-	saveMeta(_edition, JSON.stringify(tempMetadata));
-	return tempMetadata;
-};
-
-const addAttributes = (_element) => {
-	let selectedElement = _element.layer.selectedElement;
-	attributesList.push({
-		trait_type: _element.layer.name,
-		name: selectedElement.name,
-	});
-};
-
-const loadLayerImg = async (_layer) => {
-	return new Promise(async (resolve) => {
-		const image = await loadImage(`${_layer.selectedElement.path}`);
-		resolve({ layer: _layer, loadedImage: image });
-	});
-};
-
-const drawElement = (_element) => {
-	ctx.drawImage(
-		_element.loadedImage,
-		_element.layer.position.x,
-		_element.layer.position.y,
-		_element.layer.size.width,
-		_element.layer.size.height
-	);
-	addAttributes(_element);
-};
-
-const constructLayerToDna = (_dna = [], _layers = [], _rarity) => {
-	let mappedDnaToLayers = _layers.map((layer, index) => {
-		let selectedElement = layer.elements[_rarity][_dna[index]];
-		return {
-			location: layer.location,
-			position: layer.position,
-			size: layer.size,
-			name: layer.name,
-			// score: randomPicks[index].score,
-			selectedElement: selectedElement,
-		};
-	});
-
-	return mappedDnaToLayers;
-};
-
-const getRarity = (_editionCount) => {
-	let rarity = '';
-	rarityWeights.forEach((rarityWeight) => {
-		if (
-			_editionCount >= rarityWeight.from &&
-			_editionCount <= rarityWeight.to
-		) {
-			rarity = rarityWeight.value;
-		}
-	});
-	return rarity;
-};
-
-const isDnaUnique = (_DnaList = [], _dna = [], randomPicks = []) => {
-	const foundDna = _.find(_DnaList, (dna) => {
-		return (
-			_.join(dna.newDna, '') === _.join(_dna, '') &&
-			_.map(dna.randomPicks, 'score').join('') ===
-				_.map(randomPicks.join(''), 'score')
-		);
-	});
-
-	return _.isEmpty(foundDna);
-};
-
-const createDna = (_layers, _rarity) => {
-	let randNum = [];
-	let randomPicks = [];
-	_layers.forEach((layer) => {
-		// let rand100 = Math.floor(Math.random() * 100)
-		// if (rand100 % 48 === 0) {
-		//   randomPick = rarityWeights[2]
-		// } else if (rand100 % 20 === 0) {
-		//   randomPick = rarityWeights[1]
-		// } else {
-		//   randomPick = rarityWeights[0]
-		// }
-		const randomPick =
-			rarityWeights[Math.floor(Math.random() * rarityWeights.length)];
-		let num = Math.floor(
-			Math.random() * layer.elements[randomPick.value].length
-		);
-		randomPicks.push(randomPick);
-		randNum.push(num);
-	});
-
-	return { newDna: randNum, randomPicks };
-};
-
-const writeMetaData = (_data) => {
-	fs.writeFileSync('./output/_metadata.json', _data);
-};
-
-const getDNAList = () => {
-	let dna = [];
-	for (let i = 0; i < 3; i += 1) {
-		for (let j = 0; j < 6; j += 1) {
-			for (let k = 0; k < 1; k += 1) {
-				for (let l = 0; l < 1; l += 1) {
-					for (let m = 0; m < 1; m += 1) {
-						for (let n = 0; n < 1; n += 1) {
-							dna.push([i, j, k, l, m, n]);
-						}
-					}
-				}
-			}
-		}
-	}
-	return dna;
-	// console.log(dna.length);
-	// dna.forEach(item => console.log(item))
-};
-
-const startCreating = async () => {
-	writeMetaData('');
-	const dnaList = getDNAList();
-	let editionCount = startEditionFrom;
-	while (editionCount <= 2) {
-		// console.log(editionCount);
-
-		let rarity = getRarity(editionCount);
-		let dna = dnaList[editionCount - 1];
-		// console.log(rarity);
-
-		// let { newDna, randomPicks } = createDna(layers, rarity);
-		// console.log(dnaList);
-
-		// if (isDnaUnique(dnaList, newDna, randomPicks)) {
-		// let results = constructLayerToDna(newDna, layers, rarity, randomPicks);
-		let results = constructLayerToDna(dna, layers, 'original');
-		// let results = dnaList[editionCount]
-		let loadedElements = []; //promise array
-
-		results.forEach((layer) => {
-			loadedElements.push(loadLayerImg(layer));
-		});
-
-		await Promise.all(loadedElements).then(async (elementArray) => {
-			ctx.clearRect(0, 0, width, height);
-			drawBackground();
-			let score = 0;
-
-			// if (elementArray === undefined) {
-			//   console.log('his');
-			// }
-
-			elementArray.forEach((element) => {
-				drawElement(element);
-				// score += element.layer.score;
-			});
-
-			signImage(`#${editionCount}`);
-			saveImage(editionCount);
-			const meta = await addMetadata(dna, editionCount);
-			// console.log('metadataList', meta);
-      metadataList.push(meta)
-			console.log(`Created edition: ${editionCount} with DNA: ${dna}`);
-		});
-		// dnaList.push({
-		// 	newDna,
-		// 	randomPicks,
-		// });
-		editionCount++;
-		// } else {
-		// 	console.log('DNA exists!');
-		// }
-	}
-	writeMetaData(JSON.stringify(metadataList));
-};
-
-startCreating();
+app.use(express.static('data'))
+ 
+var server = app.listen(3001, function () {
+ 
+  var host = server.address().address
+  var port = server.address().port
+ 
+  console.log("应用实例，访问地址为 http://%s:%s", host, port)
+ 
+})
