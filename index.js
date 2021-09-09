@@ -34,6 +34,7 @@ app.get('/:tokenId', async (req, res) => {
 })
 
 app.use(express.static('data'))
+app.use(express.static('./web/build'))
  
 var server = app.listen(3001, function () {
  
