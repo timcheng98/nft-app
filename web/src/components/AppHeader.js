@@ -37,9 +37,9 @@ const AppHeader = () => {
 								</Link>{' '}
 							</Col>
 							<Col>
-								<a href='#about' className='white-high'>
+								<Link to='/#about' className='white-high'>
 									About
-								</a>
+								</Link>
 							</Col>
 							<Col>
 								<a
