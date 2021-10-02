@@ -12,14 +12,18 @@ const {
 	rarityWeights,
 } = require('./input/config.js');
 const { Buffer } = require('buffer');
-const { NFTStorage, File, toGatewayURL } = require('nft.storage');
+// const { NFTStorage, File, toGatewayURL } = require('nft.storage');
 const _ = require('lodash');
 const console = require('console');
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext('2d');
-const apiKey =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4ZjAwYTcyRDlmRjJiOGE1QzAxNjZlOTIzN0YwMjM4QmZGYTNBNTgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzMDg0NTYzNDIxOCwibmFtZSI6IldTQk5GVCJ9.a6u_18N6erBhc_1Y6gaPuf_Dfd-e3ldQqR6sPexqXaE';
-const client = new NFTStorage({ token: apiKey });
+// const apiKey =
+// 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4ZjAwYTcyRDlmRjJiOGE1QzAxNjZlOTIzN0YwMjM4QmZGYTNBNTgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzMDg0NTYzNDIxOCwibmFtZSI6IldTQk5GVCJ9.a6u_18N6erBhc_1Y6gaPuf_Dfd-e3ldQqR6sPexqXaE';
+// const client = new NFTStorage({ token: apiKey });
+
+const Chance = require('chance')
+
+const chance = new Chance()
 
 var metadataList = [];
 var attributesList = [];
@@ -27,13 +31,13 @@ var dnaList = [];
 
 const saveImage = (_editionCount) => {
 	fs.writeFileSync(
-		`./output/${_editionCount}.png`,
+		`./output/images/${_editionCount}.png`,
 		canvas.toBuffer('image/png')
 	);
 };
 
 const saveMeta = (_editionCount, meta) => {
-	fs.writeFileSync(`./output/${_editionCount}.json`, meta);
+	fs.writeFileSync(`./output/meta/${_editionCount}.json`, meta);
 };
 
 const signImage = (_sig) => {
@@ -57,17 +61,17 @@ const drawBackground = () => {
 
 const addMetadata = async (_dna, _edition) => {
 	let dateTime = Date.now();
-	const data = await fs.readFileSync(`./output/${_edition}.png`);
+	const data = await fs.readFileSync(`./output/images/${_edition}.png`);
 
-	const cid = await client.storeBlob(new File([data], '1.png', { type: 'image/png' }),)
+	// const cid = await client.storeBlob(new File([data], '1.png', { type: 'image/png' }),)
 
 	// console.log('cid', cid);
-	const imageURL = await toGatewayURL(`ipfs://${cid}`)
+	// const imageURL = await toGatewayURL(`ipfs://${cid}`)
 	let tempMetadata = {
 		// dna: _dna.join(''),
 		name: `Crypto WallStreetBets #${_edition}`,
 		description: description,
-		image: imageURL.href,
+		image: baseImageUri,
 		edition: _edition,
 		// date: dateTime,
 		attributes: attributesList,
@@ -174,14 +178,14 @@ const writeMetaData = (_data) => {
 
 const getDNAList = () => {
 	let dna = [];
-	for (let i = 0; i < 3; i += 1) {
-		for (let j = 0; j < 6; j += 1) {
-			for (let k = 0; k < 1; k += 1) {
-				for (let l = 0; l < 1; l += 1) {
-					for (let m = 0; m < 1; m += 1) {
-						for (let n = 0; n < 1; n += 1) {
-							dna.push([i, j, k, l, m, n]);
-						}
+	for (let i = 0; i < 8; i += 1) {
+		for (let j = 0; j < 8; j += 1) {
+			for (let k = 0; k < 8; k += 1) {
+				for (let l = 0; l < 8; l += 1) {
+					for (let m = 0; m < 8; m += 1) {
+						// for (let n = 0; n < 1; n += 1) {
+							dna.push([i, j, k, l, m]);
+						// }
 					}
 				}
 			}
@@ -194,9 +198,10 @@ const getDNAList = () => {
 
 const startCreating = async () => {
 	writeMetaData('');
-	const dnaList = getDNAList();
+	let dnaList = getDNAList();
+	dnaList = chance.shuffle(dnaList)
 	let editionCount = startEditionFrom;
-	while (editionCount <= dnaList.length -1 ) {
+	while (editionCount <= 20 ) {
 		// console.log(editionCount);
 
 		let rarity = getRarity(editionCount);

@@ -1,9 +1,11 @@
 const fs = require('fs');
-const width = 1000;
-const height = 1000;
+const width = 512;
+const height = 512;
 const dir = __dirname;
-const description = 'Crpyto WallstreetBets are 10,000 art pieces with a one-of-a-kind digital collection of various NFTs that are stored on the Polygon Blockchain. Each one has been meticulously created, hand-picked, and perfectly formed.';
-const baseImageUri = 'https://hashlips/nft';
+const description =
+	'Crpyto WallstreetBets are 10,000 art pieces with a one-of-a-kind digital collection of various NFTs that are stored on the Polygon Blockchain. Each one has been meticulously created, hand-picked, and perfectly formed.';
+const baseImageUri = 'https://wallstreetbets/nft';
+const blockchainUri = 'ipfs://QmNnBUwgYxprANJNqy6KDfGdvmUQ1Q9bN4Y7k2SW8v4rmp';
 const startEditionFrom = 0;
 const endEditionAt = 10;
 const editionSize = 10;
@@ -12,21 +14,21 @@ const rarityWeights = [
 		value: 'original',
 		from: 5,
 		to: editionSize,
-    lucky: 2,
+		lucky: 2,
 		score: 1,
 	},
 	{
 		value: 'rare',
 		from: 2,
 		to: 5,
-    lucky: 24,
+		lucky: 24,
 		score: 2,
 	},
 	{
 		value: 'super_rare',
 		from: 1,
 		to: 1,
-    lucky: 48,
+		lucky: 48,
 		score: 3,
 	},
 ];
@@ -50,65 +52,116 @@ const getElements = (path) => {
 
 const layers = [
 	{
-		name: 'ball',
+		name: 'background',
 		elements: {
-			original: getElements(`${dir}/ball/original`),
-			rare: getElements(`${dir}/ball/rare`),
-			super_rare: getElements(`${dir}/ball/super_rare`),
+			original: getElements(`${dir}/background/original`),
+			// rare: getElements(`${dir}/background/rare`),
+			// super_rare: getElements(`${dir}/background/super_rare`),
+		},
+		position: { x: -1, y: -1 },
+		size: { width: width + 2, height: height + 2 },
+	},
+	{
+		name: 'cloth',
+		elements: {
+			original: getElements(`${dir}/cloth/original`),
+			// rare: getElements(`${dir}/cloth/rare`),
+			// super_rare: getElements(`${dir}/cloth/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
 	{
-		name: 'Eye color',
+		name: 'hair',
 		elements: {
-			original: getElements(`${dir}/eye color/original`),
-			rare: getElements(`${dir}/eye color/rare`),
-			super_rare: getElements(`${dir}/eye color/super_rare`),
+			original: getElements(`${dir}/hair/original`),
+			// rare: getElements(`${dir}/hair/rare`),
+			// super_rare: getElements(`${dir}/hair/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
 	{
-		name: 'Iris',
+		name: 'month',
 		elements: {
-			original: getElements(`${dir}/iris/original`),
-			rare: getElements(`${dir}/iris/rare`),
-			super_rare: getElements(`${dir}/iris/super_rare`),
+			original: getElements(`${dir}/month/original`),
+			// rare: getElements(`${dir}/month/rare`),
+			// super_rare: getElements(`${dir}/month/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
 	{
-		name: 'shine',
+		name: 'glasses',
 		elements: {
-			original: getElements(`${dir}/shine/original`),
-			rare: getElements(`${dir}/shine/rare`),
-			super_rare: getElements(`${dir}/shine/super_rare`),
+			original: getElements(`${dir}/glasses/original`),
+			// rare: getElements(`${dir}/glasses/rare`),
+			// super_rare: getElements(`${dir}/glasses/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
-	{
-		name: 'Bottom lid',
-		elements: {
-			original: getElements(`${dir}/bottom lid/original`),
-			rare: getElements(`${dir}/bottom lid/rare`),
-			super_rare: getElements(`${dir}/bottom lid/super_rare`),
-		},
-		position: { x: 0, y: 0 },
-		size: { width: width, height: height },
-	},
-	{
-		name: 'Top lid',
-		elements: {
-			original: getElements(`${dir}/top lid/original`),
-			rare: getElements(`${dir}/top lid/rare`),
-			super_rare: getElements(`${dir}/top lid/super_rare`),
-		},
-		position: { x: 0, y: 0 },
-		size: { width: width, height: height },
-	},
+
+	// {
+	// 	name: 'ball',
+	// 	elements: {
+	// 		original: getElements(`${dir}/ball/original`),
+	// 		rare: getElements(`${dir}/ball/rare`),
+	// 		super_rare: getElements(`${dir}/ball/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
+	// {
+	// 	name: 'Eye color',
+	// 	elements: {
+	// 		original: getElements(`${dir}/eye color/original`),
+	// 		rare: getElements(`${dir}/eye color/rare`),
+	// 		super_rare: getElements(`${dir}/eye color/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
+	// {
+	// 	name: 'Iris',
+	// 	elements: {
+	// 		original: getElements(`${dir}/iris/original`),
+	// 		rare: getElements(`${dir}/iris/rare`),
+	// 		super_rare: getElements(`${dir}/iris/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
+	// {
+	// 	name: 'shine',
+	// 	elements: {
+	// 		original: getElements(`${dir}/shine/original`),
+	// 		rare: getElements(`${dir}/shine/rare`),
+	// 		super_rare: getElements(`${dir}/shine/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
+	// {
+	// 	name: 'Bottom lid',
+	// 	elements: {
+	// 		original: getElements(`${dir}/bottom lid/original`),
+	// 		rare: getElements(`${dir}/bottom lid/rare`),
+	// 		super_rare: getElements(`${dir}/bottom lid/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
+	// {
+	// 	name: 'Top lid',
+	// 	elements: {
+	// 		original: getElements(`${dir}/top lid/original`),
+	// 		rare: getElements(`${dir}/top lid/rare`),
+	// 		super_rare: getElements(`${dir}/top lid/super_rare`),
+	// 	},
+	// 	position: { x: 0, y: 0 },
+	// 	size: { width: width, height: height },
+	// },
 ];
 
 module.exports = {
@@ -121,4 +174,5 @@ module.exports = {
 	startEditionFrom,
 	endEditionAt,
 	rarityWeights,
+	blockchainUri,
 };
