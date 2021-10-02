@@ -1,6 +1,6 @@
 const fs = require('fs');
 const width = 512;
-const height = 512;
+const height = 467;
 const dir = __dirname;
 const description =
 	'Crpyto WallstreetBets are 10,000 art pieces with a one-of-a-kind digital collection of various NFTs that are stored on the Polygon Blockchain. Each one has been meticulously created, hand-picked, and perfectly formed.';
@@ -55,28 +55,28 @@ const layers = [
 		name: 'background',
 		elements: {
 			original: getElements(`${dir}/background/original`),
-			// rare: getElements(`${dir}/background/rare`),
-			// super_rare: getElements(`${dir}/background/super_rare`),
-		},
-		position: { x: -1, y: -1 },
-		size: { width: width + 2, height: height + 2 },
-	},
-	{
-		name: 'cloth',
-		elements: {
-			original: getElements(`${dir}/cloth/original`),
-			// rare: getElements(`${dir}/cloth/rare`),
-			// super_rare: getElements(`${dir}/cloth/super_rare`),
+			rare: getElements(`${dir}/background/rare`),
+			super_rare: getElements(`${dir}/background/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
 	{
-		name: 'hair',
+		name: 'clothing',
 		elements: {
-			original: getElements(`${dir}/hair/original`),
-			// rare: getElements(`${dir}/hair/rare`),
-			// super_rare: getElements(`${dir}/hair/super_rare`),
+			original: getElements(`${dir}/clothing/original`),
+			rare: getElements(`${dir}/clothing/rare`),
+			super_rare: getElements(`${dir}/clothing/super_rare`),
+		},
+		position: { x: 0, y: 0 },
+		size: { width: width, height: height },
+	},
+	{
+		name: 'face',
+		elements: {
+			original: getElements(`${dir}/face/original`),
+			rare: getElements(`${dir}/face/rare`),
+			super_rare: getElements(`${dir}/face/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
@@ -85,8 +85,18 @@ const layers = [
 		name: 'month',
 		elements: {
 			original: getElements(`${dir}/month/original`),
-			// rare: getElements(`${dir}/month/rare`),
-			// super_rare: getElements(`${dir}/month/super_rare`),
+			rare: getElements(`${dir}/month/rare`),
+			super_rare: getElements(`${dir}/month/super_rare`),
+		},
+		position: { x: 0, y: 0 },
+		size: { width: width, height: height },
+	},
+	{
+		name: 'hair style',
+		elements: {
+			original: getElements(`${dir}/hair/original`),
+			rare: getElements(`${dir}/hair/rare`),
+			super_rare: getElements(`${dir}/hair/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
@@ -95,12 +105,15 @@ const layers = [
 		name: 'glasses',
 		elements: {
 			original: getElements(`${dir}/glasses/original`),
-			// rare: getElements(`${dir}/glasses/rare`),
-			// super_rare: getElements(`${dir}/glasses/super_rare`),
+			rare: getElements(`${dir}/glasses/rare`),
+			super_rare: getElements(`${dir}/glasses/super_rare`),
 		},
 		position: { x: 0, y: 0 },
 		size: { width: width, height: height },
 	},
+
+
+
 
 	// {
 	// 	name: 'ball',

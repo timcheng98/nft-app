@@ -21,9 +21,9 @@ const ctx = canvas.getContext('2d');
 // 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4ZjAwYTcyRDlmRjJiOGE1QzAxNjZlOTIzN0YwMjM4QmZGYTNBNTgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzMDg0NTYzNDIxOCwibmFtZSI6IldTQk5GVCJ9.a6u_18N6erBhc_1Y6gaPuf_Dfd-e3ldQqR6sPexqXaE';
 // const client = new NFTStorage({ token: apiKey });
 
-const Chance = require('chance')
+const Chance = require('chance');
 
-const chance = new Chance()
+const chance = new Chance();
 
 var metadataList = [];
 var attributesList = [];
@@ -172,48 +172,95 @@ const createDna = (_layers, _rarity) => {
 	return { newDna: randNum, randomPicks };
 };
 
-const writeMetaData = (_data) => {
-	fs.writeFileSync('./output/_metadata.json', _data);
+const writeMetaData = (_data, type) => {
+	fs.writeFileSync(`./output/_metadata_${type}.json`, _data);
 };
 
-const getDNAList = () => {
+const getDNAList = (type) => {
 	let dna = [];
-	for (let i = 0; i < 8; i += 1) {
-		for (let j = 0; j < 8; j += 1) {
-			for (let k = 0; k < 8; k += 1) {
-				for (let l = 0; l < 8; l += 1) {
-					for (let m = 0; m < 8; m += 1) {
-						// for (let n = 0; n < 1; n += 1) {
-							dna.push([i, j, k, l, m]);
-						// }
+	if (type === 'original') {
+		for (let i = 0; i < 16; i += 1) {
+			for (let q = 0; q < 5; q += 1) {
+				for (let j = 0; j < 1; j += 1) {
+					for (let k = 0; k < 5; k += 1) {
+						for (let l = 0; l < 5; l += 1) {
+							for (let m = 0; m < 5; m += 1) {
+								// for (let n = 0; n < 1; n += 1) {
+								dna.push([i, q, j, k, l, m]);
+								// }
+							}
+						}
 					}
 				}
 			}
 		}
+		return dna;
 	}
-	return dna;
+
+	if (type === 'rare') {
+		for (let i = 0; i < 16; i += 1) {
+			for (let q = 0; q < 2; q += 1) {
+				for (let j = 0; j < 1; j += 1) {
+					for (let k = 0; k < 2; k += 1) {
+						for (let l = 0; l < 2; l += 1) {
+							for (let m = 0; m < 2; m += 1) {
+								// for (let n = 0; n < 1; n += 1) {
+								dna.push([i, q, j, k, l, m]);
+								// }
+							}
+						}
+					}
+				}
+			}
+		}
+		return dna;
+	}
+
+	if (type === 'super_rare') {
+		for (let i = 0; i < 16; i += 1) {
+			for (let q = 0; q < 1; q += 1) {
+				for (let j = 0; j < 1; j += 1) {
+					for (let k = 0; k < 1; k += 1) {
+						for (let l = 0; l < 1; l += 1) {
+							for (let m = 0; m < 1; m += 1) {
+								// for (let n = 0; n < 1; n += 1) {
+								dna.push([i, q, j, k, l, m]);
+								// }
+							}
+						}
+					}
+				}
+			}
+		}
+		return dna;
+	}
+
 	// console.log(dna.length);
 	// dna.forEach(item => console.log(item))
 };
 
 const startCreating = async () => {
-	writeMetaData('');
-	let dnaList = getDNAList();
-	dnaList = chance.shuffle(dnaList)
-	let editionCount = startEditionFrom;
-	while (editionCount <= 20 ) {
+	let type = 'original';
+	writeMetaData('', type);
+	let dnaList = getDNAList(type);
+	dnaList = chance.shuffle(dnaList);
+	let editionCount = 0;
+	let addition = 272;
+	while (editionCount <= dnaList.length - 1) {
 		// console.log(editionCount);
 
 		let rarity = getRarity(editionCount);
 		let dna = dnaList[editionCount];
+
 		// console.log(rarity);
 
 		// let { newDna, randomPicks } = createDna(layers, rarity);
-		// console.log(dnaList);
+		if (_.isEmpty(dna)) return;
 
 		// if (isDnaUnique(dnaList, newDna, randomPicks)) {
 		// let results = constructLayerToDna(newDna, layers, rarity, randomPicks);
-		let results = constructLayerToDna(dna, layers, 'original');
+		let results = constructLayerToDna(dna, layers, type);
+
 		// let results = dnaList[editionCount]
 		let loadedElements = []; //promise array
 
@@ -230,17 +277,37 @@ const startCreating = async () => {
 			//   console.log('his');
 			// }
 
-			elementArray.forEach((element) => {
+			let arr = elementArray;
+			let found = false;
+			_.forEach(arr, (item) => {
+				if (type !== 'rare') return;
+				// console.log('item.selectedElement.name', item.selectedElement.name);
+				if (item.layer.selectedElement.name === '08-hair') {
+					found = true;
+				}
+			});
+
+			if (found) {
+				let glass = elementArray[elementArray.length - 1];
+				let hair = elementArray[elementArray.length - 2];
+				arr[elementArray.length - 1] = hair;
+				arr[elementArray.length - 2] = glass;
+				// console.log('first', arr);
+				// console.log('second', second);
+			}
+
+			// console.log('element', arr);
+			arr.forEach((element) => {
 				drawElement(element);
 				// score += element.layer.score;
 			});
 
-			signImage(`#${editionCount}`);
-			saveImage(editionCount);
-			const meta = await addMetadata(dna, editionCount);
+			// signImage(`#${editionCount}`);
+			saveImage(addition + editionCount);
+			const meta = await addMetadata(dna, addition + editionCount);
 			// console.log('metadataList', meta);
-      metadataList.push(meta)
-			console.log(`Created edition: ${editionCount} with DNA: ${dna}`);
+			metadataList.push(meta);
+			console.log(`Created edition: ${addition + editionCount} with DNA: ${dna}`);
 		});
 		// dnaList.push({
 		// 	newDna,
@@ -251,7 +318,7 @@ const startCreating = async () => {
 		// 	console.log('DNA exists!');
 		// }
 	}
-	writeMetaData(JSON.stringify(metadataList));
+	writeMetaData(JSON.stringify(metadataList), type);
 };
 
 startCreating();
