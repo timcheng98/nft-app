@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/:tokenId', async (req, res) => {
+app.get('/api/creature/:tokenId', async (req, res) => {
   try {
   const { tokenId } = req.params;
   const meta = path.join(__dirname, `./output/${tokenId}.json`)
