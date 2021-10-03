@@ -26,6 +26,16 @@ app.use(function (req, res, next) {
 app.get('/api/creature/:tokenId', async (req, res) => {
   try {
   const { tokenId } = req.params;
+  const meta = path.join(__dirname, `./output/meta/${tokenId}.json`)
+  res.sendFile(meta);
+  } catch (err) {
+    res.json(404)
+  }
+})
+
+app.get('/api/creature/images/:tokenId', async (req, res) => {
+  try {
+  const { tokenId } = req.params;
   const meta = path.join(__dirname, `./output/images/${tokenId}.png`)
   res.sendFile(meta);
   } catch (err) {
