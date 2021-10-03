@@ -17,6 +17,9 @@ const _ = require('lodash');
 const console = require('console');
 const canvas = createCanvas(width, height);
 const ctx = canvas.getContext('2d');
+const originalDnaList = require('./original.json')
+const rareDnaList = require('./rare.json')
+const superRareDnaList = require('./super_rare.json')
 // const apiKey =
 // 	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDk4ZjAwYTcyRDlmRjJiOGE1QzAxNjZlOTIzN0YwMjM4QmZGYTNBNTgiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzMDg0NTYzNDIxOCwibmFtZSI6IldTQk5GVCJ9.a6u_18N6erBhc_1Y6gaPuf_Dfd-e3ldQqR6sPexqXaE';
 // const client = new NFTStorage({ token: apiKey });
@@ -179,7 +182,7 @@ const writeMetaData = (_data, type) => {
 const getDNAList = (type) => {
 	let dna = [];
 	if (type === 'original') {
-		for (let i = 0; i < 16; i += 1) {
+		for (let i = 0; i < 15; i += 1) {
 			for (let q = 0; q < 5; q += 1) {
 				for (let j = 0; j < 1; j += 1) {
 					for (let k = 0; k < 5; k += 1) {
@@ -198,7 +201,7 @@ const getDNAList = (type) => {
 	}
 
 	if (type === 'rare') {
-		for (let i = 0; i < 16; i += 1) {
+		for (let i = 0; i < 15; i += 1) {
 			for (let q = 0; q < 2; q += 1) {
 				for (let j = 0; j < 1; j += 1) {
 					for (let k = 0; k < 2; k += 1) {
@@ -217,7 +220,7 @@ const getDNAList = (type) => {
 	}
 
 	if (type === 'super_rare') {
-		for (let i = 0; i < 16; i += 1) {
+		for (let i = 0; i < 15; i += 1) {
 			for (let q = 0; q < 1; q += 1) {
 				for (let j = 0; j < 1; j += 1) {
 					for (let k = 0; k < 1; k += 1) {
@@ -239,20 +242,47 @@ const getDNAList = (type) => {
 	// dna.forEach(item => console.log(item))
 };
 
+const getDnaFromJson = (type) => {
+	if (type === 'original') {
+		return {
+			dnaList: originalDnaList.dnaList,
+			startIndex: 255
+		}
+	}
+	if (type === 'rare') {
+		return {
+			dnaList: rareDnaList.dnaList,
+			startIndex: 15
+		}
+	}
+	if (type === 'super_rare') {
+		return {
+			dnaList: superRareDnaList.dnaList,
+			startIndex: 0
+		}
+	}
+}
+
 const startCreating = async () => {
-	let type = 'original';
+	let type = 'rare';
 	writeMetaData('', type);
-	let dnaList = getDNAList(type);
-	dnaList = chance.shuffle(dnaList);
+	// let dnaList = getDNAList(type);
+	// dnaList = chance.shuffle(dnaList);
+
+	// console.log(originalDnaList.dnaList.length);
+	// console.log(rareDnaList.dnaList.length);
+	// console.log(superRareDnaList.dnaList.length);
+	// fs.writeFileSync(`./${type}.json`, JSON.stringify({ dnaList }));
+
+	let { dnaList, startIndex } = getDnaFromJson(type);
 	let editionCount = 0;
-	let addition = 272;
+	// console.log('dnaList', dnaList);
 	while (editionCount <= dnaList.length - 1) {
 		// console.log(editionCount);
 
-		let rarity = getRarity(editionCount);
+		// let rarity = getRarity(editionCount);
 		let dna = dnaList[editionCount];
 
-		// console.log(rarity);
 
 		// let { newDna, randomPicks } = createDna(layers, rarity);
 		if (_.isEmpty(dna)) return;
@@ -282,7 +312,7 @@ const startCreating = async () => {
 			_.forEach(arr, (item) => {
 				if (type !== 'rare') return;
 				// console.log('item.selectedElement.name', item.selectedElement.name);
-				if (item.layer.selectedElement.name === '08-hair') {
+				if (item.layer.selectedElement.name === 'Middle Part Hair') {
 					found = true;
 				}
 			});
@@ -303,11 +333,13 @@ const startCreating = async () => {
 			});
 
 			// signImage(`#${editionCount}`);
-			saveImage(addition + editionCount);
-			const meta = await addMetadata(dna, addition + editionCount);
+			saveImage(startIndex + editionCount);
+			const meta = await addMetadata(dna, startIndex + editionCount);
 			// console.log('metadataList', meta);
 			metadataList.push(meta);
-			console.log(`Created edition: ${addition + editionCount} with DNA: ${dna}`);
+			console.log(
+				`Created edition: ${startIndex + editionCount} with DNA: ${dna}`
+			);
 		});
 		// dnaList.push({
 		// 	newDna,

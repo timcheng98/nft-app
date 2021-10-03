@@ -5,7 +5,7 @@ const dir = __dirname;
 const description =
 	'Crpyto WallstreetBets are 10,000 art pieces with a one-of-a-kind digital collection of various NFTs that are stored on the Polygon Blockchain. Each one has been meticulously created, hand-picked, and perfectly formed.';
 const baseImageUri = 'https://wallstreetbets/nft';
-const blockchainUri = 'ipfs://QmNnBUwgYxprANJNqy6KDfGdvmUQ1Q9bN4Y7k2SW8v4rmp';
+const blockchainUri = 'ipfs://QmTjaSyRcWhnUD2qqyUnXBVgc2x6VVP2BcASjewYM967kN';
 const startEditionFrom = 0;
 const endEditionAt = 10;
 const editionSize = 10;
